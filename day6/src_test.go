@@ -5,26 +5,6 @@ import (
 	"testing"
 )
 
-func Test_countSteps(t *testing.T) {
-	type args struct {
-		banks []int
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{"test", args{banks: []int{0, 2, 7, 0}}, 5},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := countSteps(tt.args.banks); got != tt.want {
-				t.Errorf("countSteps() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_findMaxWithIndex(t *testing.T) {
 	type args struct {
 		array []int
@@ -85,6 +65,32 @@ func Test_main(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			main()
+		})
+	}
+}
+
+func Test_countSteps(t *testing.T) {
+	type args struct {
+		banks []int
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  int
+		want1 []int
+	}{
+		{"test", args{banks: []int{0, 2, 7, 0}}, 5, []int{2, 4, 1, 2}},
+		{"test", args{banks: []int{14, 0, 15, 12, 11, 11, 3, 5, 1, 6, 8, 4, 9, 1, 8, 4}}, 11137, []int{14, 13, 12, 11, 9, 8, 8, 6, 6, 4, 4, 3, 1, 1, 0, 12}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := countSteps(tt.args.banks)
+			if got != tt.want {
+				t.Errorf("countSteps() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("countSteps() got1 = %v, want %v", got1, tt.want1)
+			}
 		})
 	}
 }

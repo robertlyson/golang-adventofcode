@@ -18,18 +18,25 @@ func main() {
 		banks = append(banks, j)
 	}
 
+	steps, g := countSteps(banks)
+
 	fmt.Printf("banks: %v", banks)
-	fmt.Printf("Steps: %d", countSteps(banks))
+	fmt.Printf("Steps: %d", steps)
+
+	steps2, _ := countSteps(g)
+
+	fmt.Printf("Steps: %d", steps2)
 }
 
-func countSteps(banks []int) int {
+func countSteps(banks []int) (int, []int) {
 	m := make(map[string]bool)
 	m[fmt.Sprintf("%v", banks)] = true
 	steps := 1
+	var generated []int
 
 	for {
-		nextBlock := nextBlock(banks)
-		key := fmt.Sprintf("%v", nextBlock)
+		generated = nextBlock(banks)
+		key := fmt.Sprintf("%v", generated)
 		_, found := m[key]
 		if found {
 			break
@@ -38,7 +45,7 @@ func countSteps(banks []int) int {
 		steps++
 	}
 
-	return steps
+	return steps, generated
 }
 
 func nextBlock(banks []int) []int {
