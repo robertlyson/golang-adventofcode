@@ -7,12 +7,30 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-type Line struct {
-	Name     string
-	Children []string
+type Node struct {
+	Name          string
+	Parent        *Node
+	ChildrenNames map[string]bool
+	Children      []*Node
+	Weight        int
+}
+
+func (n *Node) CalcWeight() int {
+	if n.Children == nil {
+		return n.Weight
+	}
+
+	weight := n.Weight
+
+	for i := range n.Children {
+		weight += n.Children[i].CalcWeight()
+	}
+
+	return weight
 }
 
 func main() {
@@ -23,54 +41,62 @@ func main() {
 	}
 
 	fileLines, err := read(file)
-	lines := make([]Line, len(fileLines))
-	for i := 0; i < len(lines); i++ {
-		lines[i] = parseLine(fileLines[i])
+	nodes := make([]Node, len(fileLines))
+	for i := 0; i < len(nodes); i++ {
+		nodes[i] = parseLine(fileLines[i])
 	}
 
-	fmt.Printf("Root: %v", findRoot(lines))
+	root := findRoot(nodes)
+	fmt.Printf("Root: %v\n", root.Name)
+
+	for i := range root.Children {
+		weight := root.Children[i].CalcWeight()
+		fmt.Printf("node: %v weight: %d weight: %d\n", root.Children[i].Name, root.Children[i].Weight, weight)
+	}
 }
 
-func findRoot(lines []Line) string {
-	names := make([]string, len(lines))
-	children := make(map[string]bool)
-
+func findRoot(lines []Node) Node {
 	for i := 0; i < len(lines); i++ {
-		names[i] = lines[i].Name
+		current := &lines[i]
 
-		for j := 0; j < len(lines[i].Children); j++ {
-			key := lines[i].Children[j]
-			_, found := children[key]
+		for j := 0; j < len(lines); j++ {
+			_, found := lines[j].ChildrenNames[current.Name]
 			if found {
-				continue
+				current.Parent = &lines[j]
+				lines[j].Children = append(lines[j].Children, current)
+				break
 			}
-			children[key] = true
 		}
 	}
+
+	root := Node{}
 
 	for i := 0; i < len(lines); i++ {
-		_, found := children[lines[i].Name]
-		if found == false {
-			return lines[i].Name
+		if lines[i].Parent == nil {
+			root = lines[i]
+			break
 		}
 	}
 
-	return ""
+	return root
 }
 
-func parseLine(line string) Line {
+func parseLine(line string) Node {
 	parsed := strings.Split(line, " -> ")
 
 	r, _ := regexp.Compile("(.+) \\((\\d+)\\)")
 
 	groups := r.FindStringSubmatch(parsed[0])
 
-	children := []string{}
+	children := make(map[string]bool)
 	if len(parsed) > 1 {
-		children = strings.Split(parsed[1], ", ")
+		arr := strings.Split(parsed[1], ", ")
+		for s := range arr {
+			children[arr[s]] = true
+		}
 	}
-
-	return Line{groups[1], children}
+	weight, _ := strconv.Atoi(groups[2])
+	return Node{groups[1], nil, children, []*Node{}, weight}
 }
 
 func read(reader io.Reader) ([]string, error) {
