@@ -22,16 +22,17 @@ func main() {
 
 	line := fileLines[0]
 
-	score := parse(line)
+	score, garbage := parse(line)
 
-	fmt.Printf("Score %d\n", score)
+	fmt.Printf("Score %d Garbage %d\n", score, garbage)
 }
 
-func parse(input string) int {
+func parse(input string) (int, int) {
 	score := 0
 	group := 0
 	garbage := false
 	cancel := false
+	garbageCount := 0
 
 	for _, char := range input {
 		if cancel {
@@ -40,6 +41,10 @@ func parse(input string) int {
 		}
 		if char == '!' && cancel == false {
 			cancel = true
+			continue
+		}
+		if garbage && char != '>' {
+			garbageCount++
 		}
 
 		if cancel == false {
@@ -59,10 +64,9 @@ func parse(input string) int {
 				group--
 			}
 		}
-		//fmt.Printf("group: %d\n", group)
 	}
 
-	return score
+	return score, garbageCount
 }
 
 func read(reader io.Reader) ([]string, error) {
