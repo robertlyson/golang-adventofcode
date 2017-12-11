@@ -10,7 +10,7 @@ func main() {
 	for i := 0; i < len(array); i++ {
 		array[i] = i
 	}
-	//fmt.Printf("input: %v\n", array)
+	fmt.Printf("input: %v\n", array)
 	hash := hash(array, []int{46, 41, 212, 83, 1, 255, 157, 65, 139, 52, 39, 254, 2, 86, 0, 204})
 	fmt.Printf("hash1: %d hash2: %d value: %d\n", hash[0], hash[1], hash[0]*hash[1])
 }
