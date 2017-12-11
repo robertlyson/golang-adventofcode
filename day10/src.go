@@ -12,7 +12,7 @@ func main() {
 	}
 	fmt.Printf("input: %v\n", array)
 	hash := hash(array, []int{46, 41, 212, 83, 1, 255, 157, 65, 139, 52, 39, 254, 2, 86, 0, 204})
-	fmt.Printf("hash1: %d hash2: %d value: %d\n", hash[0], hash[1], hash[0]*hash[1])
+	fmt.Printf("hash1: %v hash2: %v value: %v\n", hash[0], hash[1], hash[0]*hash[1])
 }
 
 func hash(array []int, lenghts []int) []int {
@@ -20,9 +20,10 @@ func hash(array []int, lenghts []int) []int {
 	skip := 0
 
 	for _, l := range lenghts {
-		end := ringPosition(len(array), position+l) - 1
-		position = ringPosition(len(array), position)
-		reverse(array, position, end)
+		if l > 0 {
+			end := ringPosition(len(array), position+l) - 1
+			reverse(array, position, end)
+		}
 
 		position = ringPosition(len(array), position+l+skip)
 		skip++
@@ -38,22 +39,29 @@ func ringPosition(lenght int, position int) int {
 	return int(math.Abs(float64(position-lenght))) % lenght
 }
 
-func reverse(s []int, start int, end int) {
+func reverse(array []int, start int, end int) {
+	if start == end {
+		return
+	}
+	indices := make([]int, 0)
+	distance := 0
 	if start < end {
-		for i, j := start, end; i < j; i, j = i+1, j-1 {
-			s[i], s[j] = s[j], s[i]
+		distance = end - start
+		for i := 0; i <= distance; i++ {
+			indices = append(indices, i+start)
 		}
 	}
 	if start > end {
-		steps := int((len(s)-start+end)/2) + 1
-		for i, j, k := start, end, 0; k < steps; i, j, k = i+1, j-1, k+1 {
-			if i == len(s) {
-				i = 0
+		distance = len(array) - start + end
+		for i, s := 0, start; i <= distance; i, s = i+1, s+1 {
+			if s == len(array) {
+				s = 0
 			}
-			if j < 0 {
-				j = len(s) - 1
-			}
-			s[i], s[j] = s[j], s[i]
+			indices = append(indices, s)
 		}
+	}
+
+	for i, j := 0, len(indices)-1; i < j; i, j = i+1, j-1 {
+		array[indices[i]], array[indices[j]] = array[indices[j]], array[indices[i]]
 	}
 }

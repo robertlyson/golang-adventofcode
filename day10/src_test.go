@@ -16,6 +16,7 @@ func Test_hash(t *testing.T) {
 		want []int
 	}{
 		{"test", args{array: []int{0, 1, 2, 3, 4}, lenghts: []int{3, 4, 1, 5}}, []int{3, 4, 2, 1, 0}},
+		{"test", args{array: []int{1, 2, 3, 4}, lenghts: []int{3, 4, 2, 0}}, []int{3, 2, 4, 1}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
