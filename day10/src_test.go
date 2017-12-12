@@ -49,3 +49,19 @@ func Test_ringPosition(t *testing.T) {
 		})
 	}
 }
+
+func Test_lenghts2(t *testing.T) {
+	tests := []struct {
+		name string
+		want []int
+	}{
+		{"test", []int{}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := lenghts2(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("lenghts2() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

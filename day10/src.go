@@ -10,14 +10,58 @@ func main() {
 	for i := 0; i < len(array); i++ {
 		array[i] = i
 	}
-	fmt.Printf("input: %v\n", array)
-	hash := hash(array, []int{46, 41, 212, 83, 1, 255, 157, 65, 139, 52, 39, 254, 2, 86, 0, 204})
-	fmt.Printf("hash1: %v hash2: %v value: %v\n", hash[0], hash[1], hash[0]*hash[1])
+
+	fmt.Printf("l: %v\n", lenghts2())
+	h := []int{}
+	lenghts := lenghts2()
+	for i := 0; i < 64; i++ {
+		h = hash(array, lenghts)
+	}
+
+	fmt.Printf("%v\n", h)
+	sparseHash := sparseHash(h)
+
+	fmt.Printf("sparseHash: %v\n", sparseHash)
+
+	fmt.Printf("hexadecimal: ")
+	for i := 0; i < len(sparseHash); i++ {
+		fmt.Printf("%x", sparseHash[i])
+	}
 }
 
-func hash(array []int, lenghts []int) []int {
-	position := 0
-	skip := 0
+func sparseHash(array []int) []int {
+	sparseHash := make([]int, 16)
+	for i := 0; i < 16; i++ {
+		for j := i * 16; j < 256; j++ {
+			sparseHash[i] ^= array[j]
+		}
+	}
+
+	return sparseHash
+}
+
+func lenghts() []int {
+	lenghts := []int{46, 41, 212, 83, 1, 255, 157, 65, 139, 52, 39, 254, 2, 86, 0, 204}
+	return lenghts
+}
+
+func lenghts2() []int {
+	input := "46,41,212,83,1,255,157,65,139,52,39,254,2,86,0,204"
+	lenghts := make([]int, 0)
+	for i := 0; i < len(input); i++ {
+		lenghts = append(lenghts, int(input[i]))
+	}
+
+	lenghts = append(lenghts, 17, 31, 73, 47, 23)
+	return lenghts
+}
+
+var position = 0
+var skip = 0
+
+func hash(input []int, lenghts []int) []int {
+	array := make([]int, len(input))
+	copy(array, input)
 
 	for _, l := range lenghts {
 		if l > 0 {
