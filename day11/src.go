@@ -19,7 +19,7 @@ type Cube struct {
 }
 
 func main() {
-	hex := Hex{0, 0}
+	start, current := Hex{0, 0}, Hex{0, 0}
 	content, err := ioutil.ReadFile("./input.txt")
 	if err != nil {
 		panic(err.Error)
@@ -27,10 +27,19 @@ func main() {
 
 	moves := strings.Split(string(content), ",")
 
+	maxDistance := 0
 	fmt.Printf("Moves: %v\n", moves)
-	end := applyMoves(hex, moves)
-	distance := distance(hex, end)
+	for _, move := range moves {
+		current = applyMove(current, move)
+		currentDistance := distance(start, current)
+		if maxDistance < currentDistance {
+			maxDistance = currentDistance
+		}
+	}
+	end := applyMoves(start, moves)
+	distance := distance(start, end)
 	fmt.Printf("Distance: %v\n", distance)
+	fmt.Printf("MaxDistance: %v\n", maxDistance)
 }
 
 //https://www.redblobgames.com/grids/hexagons/
