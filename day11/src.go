@@ -44,7 +44,8 @@ func main() {
 
 //https://www.redblobgames.com/grids/hexagons/
 func distance(a Hex, b Hex) int {
-	return hexDistance(a, b)
+	return int((math.Abs(float64(b.X)) + math.Abs(float64(b.Y))) / 2)
+	//return hexDistance(a, b)
 }
 
 func axialToCube(hex Hex) Cube {
