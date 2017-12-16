@@ -10,10 +10,45 @@ import (
 )
 
 func main() {
-	do("./input.txt")
+	part2("./input.txt")
 }
 
-func do(inputFile string) {
+func part2(inputFile string) {
+	file, err := os.Open(inputFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fileLines, err := read(file)
+
+	programs := parseAll(fileLines)
+
+	groups := make(map[string]int, 0)
+
+	for _, p := range programs {
+		if len(groups) == 0 {
+			groups[p.ID]++
+			continue
+		}
+
+		notInGroup := true
+		for key, _ := range groups {
+			if p.hasConnectionTo(key, make([]*Program, 0)) {
+				groups[key]++
+				notInGroup = false
+				break
+			}
+		}
+		if notInGroup {
+			groups[p.ID]++
+		}
+	}
+
+	fmt.Printf("Groups: %d", len(groups))
+}
+
+func part1(inputFile string) {
 	file, err := os.Open(inputFile)
 
 	if err != nil {
@@ -33,8 +68,6 @@ type Program struct {
 	Connections     []*Program
 	Parent          *Program
 }
-
-var c = 0
 
 func (p Program) hasParent(programID string) bool {
 	if p.Parent == nil {
@@ -71,9 +104,21 @@ func (p Program) hasConnectionTo(programID string, checked []*Program) bool {
 }
 
 func connections(programsDefinition []string, programID string) int {
-	programs := make(map[string]*Program, len(programsDefinition))
-
 	connections := 0
+	programs := parseAll(programsDefinition)
+
+	for _, p := range programs {
+		checked := make([]*Program, 0)
+		if p.hasConnectionTo(programID, checked) {
+			connections++
+		}
+	}
+
+	return connections
+}
+
+func parseAll(programsDefinition []string) map[string]*Program {
+	programs := make(map[string]*Program, len(programsDefinition))
 
 	for i := 0; i < len(programsDefinition); i++ {
 		program := parse(programsDefinition[i])
@@ -94,14 +139,7 @@ func connections(programsDefinition []string, programID string) int {
 		}
 	}
 
-	for _, p := range programs {
-		checked := make([]*Program, 0)
-		if p.hasConnectionTo(programID, checked) {
-			connections++
-		}
-	}
-
-	return connections
+	return programs
 }
 
 func parse(input string) Program {
